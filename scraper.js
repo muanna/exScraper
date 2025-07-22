@@ -105,10 +105,9 @@ app.use(express.static(__dirname)); // serve HTML from same folder
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/scraper.html'); // serve index.html
 });
-const CHUNK_SIZE = 100; // Or 100, or whatever you want
-
 app.post('/scrape', async (req, res) => {
-  let { url, selector, field } = req.body;
+  let { url, selector, field, chunk } = req.body;
+  chunk = parseInt(chunk) || 50; // Default to 50 if not given
 
   if (!url || !selector || !field) {
     return res.status(400).send('Missing criteria.');
@@ -119,9 +118,10 @@ app.post('/scrape', async (req, res) => {
     const $ = cheerio.load(response.data);
     const items = $(selector);
     let rows = [["Text", "Link"]];
+    let count = 0;
 
     items.each((i, el) => {
-      if (rows.length > CHUNK_SIZE) return false; // Only up to CHUNK_SIZE results
+      if (rows.length > chunk) return false;
       let target = $(el).find(field).length ? $(el).find(field) : $(el);
       let text = target.text().trim().replace(/\s+/g, ' ');
       let link = target.attr('href') || '';
@@ -129,7 +129,7 @@ app.post('/scrape', async (req, res) => {
     });
 
     let csv = rows.map(row => row.map(val => `"${val.replace(/"/g, '""')}"`).join(',')).join('\n');
-    res.setHeader('Content-Disposition', 'attachment; filename=scraped_sample.csv');
+    res.setHeader('Content-Disposition', 'attachment; filename=scraped_chunk.csv');
     res.setHeader('Content-Type', 'text/csv');
     res.send(csv);
 
