@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Quick CSV Scraper</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 400px; margin: auto; }
+    input, button { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
+    label { font-size: 1rem; }
+    .small { font-size: 0.9rem; color: #555; }
+  </style>
+</head>
+<body>
+  <h2>Scrape Any List to CSV</h2>
+  <form id="scrape-form" method="POST" action="/scrape">
+    <label>
+      Target URL:<br>
+      <input type="url" name="url" placeholder="https://example.com/list" required>
+    </label>
+    <label>
+      Selector for items (CSS):<br>
+      <input type="text" name="selector" placeholder=".startup, tr, etc." required>
+      <div class="small">E.g. <code>.startup</code>, <code>table tr</code></div>
+    </label>
+    <label>
+      Field to extract:<br>
+      <input type="text" name="field" placeholder="a, .title, etc." required>
+      <div class="small">E.g. <code>a</code> for links/text inside each card</div>
+    </label>
+    <button type="submit">Scrape & Download CSV</button>
+  </form>
+</body>
+</html>
